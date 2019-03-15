@@ -1,4 +1,4 @@
-FROM ubuntu:bionic
+FROM nvidia:cuda
 LABEL maintainer="Scott <scott.case.1@gmail.com>"
 
 #Add needed nvidia environment variables for https://github.com/NVIDIA/nvidia-docker
