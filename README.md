@@ -157,6 +157,22 @@ Thanks to [qmfrederik](https://github.com/qmfrederik) for the vaapi ubuntu based
 - Run ffmpeg with the correct parameters, this is the same as when running [ffmpeg natively](https://trac.ffmpeg.org/wiki/Hardware/VAAPI).
 
 
+#### Use nVidia 
+
+- Run the containter with --runtime=nvidia
+
+```
+docker run --runtime=nvidia --rm --name='ffmpeg-hevc' \ -v $(pwd):/temp \
+-hwaccel nvdec \
+-stats \
+-i /temp/FILENAME \
+-c:v hevc_nvenc -preset slow -b:v 2500k \
+-c:a ac3 -metadata:s:a:0 language=eng -async 1 \
+-y /temp/FILENAME.265.mkv \
+scottcase/ffmpeghevc
+```
+
+
 See what's inside the beast
 ---------------------------
 
