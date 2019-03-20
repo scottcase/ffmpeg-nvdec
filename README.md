@@ -1,8 +1,8 @@
 FFmpeg Docker image
 ==================
 
-[![Docker Stars](https://img.shields.io/docker/stars/jrottenberg/ffmpeg.svg?style=plastic)](https://registry.hub.docker.com/v2/repositories/jrottenberg/ffmpeg/stars/count/) 
-[![Docker pulls](https://img.shields.io/docker/pulls/jrottenberg/ffmpeg.svg?style=plastic)](https://registry.hub.docker.com/v2/repositories/jrottenberg/ffmpeg/)
+[![Docker Stars](https://img.shields.io/docker/stars/scottcase/ffmpeg.svg?style=plastic)](https://registry.hub.docker.com/v2/repositories/scottcase/ffmpeg/stars/count/) 
+[![Docker pulls](https://img.shields.io/docker/pulls/scottcase/ffmpeg.svg?style=plastic)](https://registry.hub.docker.com/v2/repositories/scottcase/ffmpeg/)
 [![Docker Automated build](https://img.shields.io/docker/automated/jrottenberg/ffmpeg.svg?maxAge=2592000?style=plastic)](https://github.com/scottcase/ffmpeg-nvdec/)
 
 This project prepares a minimalist Docker image with FFmpeg. It compiles FFmpeg from sources following instructions from the [Compilation Guide](https://trac.ffmpeg.org/wiki/CompilationGuide).
@@ -158,14 +158,13 @@ Thanks to [qmfrederik](https://github.com/qmfrederik) for the vaapi ubuntu based
 - Run the containter with --runtime=nvidia
 
 ```
-docker run --runtime=nvidia --rm --name='ffmpeg-hevc' \ -v $(pwd):/temp \
+docker run --runtime=nvidia --rm -v $(pwd):/temp scottcase/ffmpeg \
 -hwaccel nvdec \
 -stats \
--i /temp/FILENAME \
+-i /temp/FILENAME.mkv \
 -c:v hevc_nvenc -preset slow -b:v 2500k \
 -c:a ac3 -metadata:s:a:0 language=eng -async 1 \
--y /temp/FILENAME.265.mkv \
-scottcase/ffmpeghevc
+-y /temp/Filename.265.mkv
 ```
 
 
