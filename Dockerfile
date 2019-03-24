@@ -8,7 +8,6 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 ADD buildffmpeg.sh buildffmpeg.sh
 
-
 RUN apt-get update && \
     apt-get install -y autoconf automake build-essential libass-dev libfreetype6-dev \
     libsdl1.2-dev libtheora-dev libtool libva-dev libvdpau-dev libvorbis-dev libxcb1-dev libxcb-shm0-dev \
