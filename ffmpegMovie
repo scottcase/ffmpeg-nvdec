@@ -68,7 +68,7 @@ do
         video=${streams_stream_0_codec_name};
         audio=${streams_stream_1_codec_name};
         FPS=$(echo "scale=2; ${streams_stream_0_avg_frame_rate}" | bc);
-        MAP="-map 0:0 -map 0:1 -map 0:1"
+        MAP='-map 0:0 -map 0:1 -map 0:1'
         FIRSTSTREAM="video"
         if ! [[ $FPS =~ ^[0-9]+([.][0-9]+)?$ ]] || [ "$video" = "h265" ] || [ "$video" = "hevc" ] || [ "$video" = "mpeg4" ] ; then
             ##echo "error: $FPS Not a number in file: $FILE";
@@ -79,7 +79,7 @@ do
         video=${streams_stream_1_codec_name};
         audio=${streams_stream_0_codec_name};
         FPS=$(echo "scale=2; ${streams_stream_1_avg_frame_rate}" | bc);
-        MAP="-map 0:1 -map 0:0 -map 0:0"
+        MAP='-map 0:1 -map 0:0 -map 0:0'
         FIRSTSTREAM="audio"
         if ! [[ $FPS =~ ^[0-9]+([.][0-9]+)?$ ]] || [ "$video" = "h265" ] || [ "$video" = "hevc" ] || [ "$video" = "mpeg4" ] ; then
             ##echo "error: $FPS Not a number in file: $FILE";
