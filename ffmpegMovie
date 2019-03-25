@@ -113,8 +113,8 @@ do
     MIN=$(echo $duration | cut -d":" -f2);
     SEC=$(echo $duration | cut -d":" -f3);
     TOT_FR=$(echo "($HRS*3600+$MIN*60+$SEC)*$FPS" | bc | cut -d"." -f1);
-
-    echo -e "Encoding $filename Started at $STARTFULLDATE\nDuration = $duration, Bitrate = $kbitrate" >> $LOG
+    ENCODESTARTFULLDATE=$(date +"%c");
+    echo -e "Encoding $filename Started at $ENCODESTARTFULLDATE\nDuration = $duration, Bitrate = $kbitrate" >> $LOG
     ##echo "filename: $filename origBitrate: $bitrate1 newbitratetmp: $newbitratetmp finalbitrate: $finalbitrate"
     if [ $audio = "ac3" ] || [ $audio = "aac" ]; then
         #echo "Audio Is AC3 or AAC just copy it...";
@@ -169,13 +169,14 @@ do
        echo "$(tput setaf 2)$(tput setab 7)Video Durations Match. Moving Original File To Unsorted Directory$(tput sgr 0)" >> $LOG
        mv -f $FILE /MoviesTMP;
        chown 99.100 "$fulldir/$filename.x265.mkv";
+       curl -s -d "eventType=Manual&filepath=$fulldir/$filename.x265.mkv" http://10.0.0.25:3468/9c4b81fe234e4d6eb9011cefe514d915 > /dev/null
        echo "File Move Complete, If you want to cancel Do ctrl+c now or process will continue in 10 seconds"
     else
        echo -e "$(tput setaf 1)$(tput setab 7)durationlong: $durationlong is not equal to durationlongnew: $durationlongNew\nremoving file $fulldir/$filename.x265.mkv$(tput sgr 0)"
        echo -e "$(tput setaf 1)$(tput setab 7)durationlong: $durationlong is not equal to durationlongnew: $durationlongNew\nremoving file $fulldir/$filename.x265.mkv$(tput sgr 0)" >> $LOG
        rm -f "$fulldir/$filename.x265.mkv";
     fi
-    curl -s -d "eventType=Manual&filepath=$fulldir/$filename.x265.mkv" http://10.0.0.25:3468/9c4b81fe234e4d6eb9011cefe514d915 > /dev/null
+    
     kbitratenew=$((bitratenew/1000))k;
     
            #echo "$filename Successfully Encoded. File encoding time: $(($DIFF / 60)) minute(s) and $(($DIFF % 60)) second(s)";
