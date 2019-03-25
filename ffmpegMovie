@@ -68,6 +68,8 @@ do
         video=${streams_stream_0_codec_name};
         audio=${streams_stream_1_codec_name};
         FPS=$(echo "scale=2; ${streams_stream_0_avg_frame_rate}" | bc);
+        MAP="-map 0:0 -map 0:1 -map 0:1"
+        FIRSTSTREAM="video"
         if ! [[ $FPS =~ ^[0-9]+([.][0-9]+)?$ ]] || [ "$video" = "h265" ] || [ "$video" = "hevc" ] || [ "$video" = "mpeg4" ] ; then
             ##echo "error: $FPS Not a number in file: $FILE";
             continue 2;
@@ -77,6 +79,8 @@ do
         video=${streams_stream_1_codec_name};
         audio=${streams_stream_0_codec_name};
         FPS=$(echo "scale=2; ${streams_stream_1_avg_frame_rate}" | bc);
+        MAP="-map 0:1 -map 0:0 -map 0:0"
+        FIRSTSTREAM="audio"
         if ! [[ $FPS =~ ^[0-9]+([.][0-9]+)?$ ]] || [ "$video" = "h265" ] || [ "$video" = "hevc" ] || [ "$video" = "mpeg4" ] ; then
             ##echo "error: $FPS Not a number in file: $FILE";
             continue 2;
@@ -114,10 +118,34 @@ do
     ##echo "filename: $filename origBitrate: $bitrate1 newbitratetmp: $newbitratetmp finalbitrate: $finalbitrate"
     if [ $audio = "ac3" ] || [ $audio = "aac" ]; then
         #echo "Audio Is AC3 or AAC just copy it...";
-        ffmpeg -hwaccel nvdec -hide_banner -i "$FILE" -metadata title="$Title" -c:a copy -metadata:s:a:0 language=eng -c:v hevc_nvenc -preset medium -profile:v main -rc vbr_hq -b:v $finalbitrate -y "$fulldir/$filename.x265.mkv" 
+        if [ $FIRSTSTREAM = "video"]; then
+	        ffmpeg -hwaccel nvdec -hide_banner -i "$FILE" -metadata title="$Title" $MAP \
+	        -c:v hevc_nvenc -preset medium -profile:v main -rc vbr_hq -b:v $finalbitrate \
+	        -c:a copy -metadata:s:a:0 language=eng \
+	        -c:a:1 aac -ab:2 256k -ac:2 2 -metadata:s:a:1 language=eng -strict -2 -async 1 \
+	        -y "$fulldir/$filename.x265.mkv"
+        else
+        	ffmpeg -hwaccel nvdec -hide_banner -i "$FILE" -metadata title="$Title" $MAP \
+	        -c:a copy -metadata:s:a:0 language=eng \
+	        -c:a:1 aac -ab:2 256k -ac:2 2 -metadata:s:a:1 language=eng -strict -2 -async 1 \
+	        -c:v hevc_nvenc -preset medium -profile:v main -rc vbr_hq -b:v $finalbitrate \
+	        -y "$fulldir/$filename.x265.mkv"
+	    fi
     else
         #echo "Audio Is Not AC3 or AAC convert  it...";
-        ffmpeg -hwaccel nvdec -hide_banner -i "$FILE" -metadata title="$Title" -c:a ac3 -metadata:s:a:0 language=eng -async 1 -c:v hevc_nvenc -preset medium -profile:v main -rc vbr_hq -b:v $finalbitrate -y "$fulldir/$filename.x265.mkv" 
+        if [ $FIRSTSTREAM = "video"]; then
+	        ffmpeg -hwaccel nvdec -hide_banner -i "$FILE" -metadata title="$Title" $MAP \
+	        -c:v hevc_nvenc -preset medium -profile:v main -rc vbr_hq -b:v $finalbitrate \
+	        -c:a ac3 -ac 6 -metadata:s:a:0 language=eng -async 1 \
+	        -c:a:1 aac -ab:2 256k -ac:2 2 -metadata:s:a:1 language=eng -strict -2 -async 1 \
+	        -y "$fulldir/$filename.x265.mkv"
+	    else
+	    	ffmpeg -hwaccel nvdec -hide_banner -i "$FILE" -metadata title="$Title" $MAP \
+	        -c:a ac3 -ac 6 -metadata:s:a:0 language=eng -async 1 \
+	        -c:a:1 aac -ab:2 256k -ac:2 2 -metadata:s:a:1 language=eng -strict -2 -async 1 \
+	        -c:v hevc_nvenc -preset medium -profile:v main -rc vbr_hq -b:v $finalbitrate \
+	        -y "$fulldir/$filename.x265.mkv"
+	    fi
     fi
     ##mv $FILE /mnt/Movies/Unsorted;
     tempVars[encodedFileSizetmp]=$(stat --printf="%s" "$fulldir/$filename.x265.mkv");
