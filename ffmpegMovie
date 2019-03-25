@@ -140,6 +140,7 @@ do
        echo "$(tput setaf 2)$(tput setab 7)Video Durations Match. Moving Original File To Unsorted Directory$(tput sgr 0)"
        echo "$(tput setaf 2)$(tput setab 7)Video Durations Match. Moving Original File To Unsorted Directory$(tput sgr 0)" >> $LOG
        mv -f $FILE /MoviesTMP;
+       chown 99.100 "$fulldir/$filename.x265.mkv";
        echo "File Move Complete, If you want to cancel Do ctrl+c now or process will continue in 10 seconds"
     else
        echo -e "$(tput setaf 1)$(tput setab 7)durationlong: $durationlong is not equal to durationlongnew: $durationlongNew\nremoving file $fulldir/$filename.x265.mkv$(tput sgr 0)"
