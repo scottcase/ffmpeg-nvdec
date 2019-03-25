@@ -36,5 +36,5 @@ RUN \
             /tmp/* \
             /var/tmp/*
 
-##CMD         ["--help"]
-##ENTRYPOINT  ["ffmpeg"]
+## CMD         ["--help"]
+## ENTRYPOINT  ["ffmpeg"]
