@@ -23,6 +23,9 @@ RUN apt-get update && \
 COPY /buildffmpeg.sh /tmp/buildffmpeg.sh
 RUN chmod +x /tmp/buildffmpeg.sh
 
+COPY /ffmpegMovie /ffmpegMovie
+RUN chmod +x /ffmpegMovie
+
 ### Install ffmpeg
 RUN echo "**** Install ffmpeg ****" && /tmp/buildffmpeg.sh
 
@@ -33,5 +36,5 @@ RUN \
             /tmp/* \
             /var/tmp/*
 
-CMD         ["--help"]
-ENTRYPOINT  ["ffmpeg"]
+##CMD         ["--help"]
+##ENTRYPOINT  ["ffmpeg"]

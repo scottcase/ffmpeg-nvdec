@@ -1,0 +1,165 @@
+#!/bin/bash
+## PATH="/home/scott/bin:$PATH"
+
+##SRC=${1:-/mnt/Movies};
+SRC="/Movies"
+
+MINSIZE=${2:-1G};
+_now=$(date +"%m_%d_%Y")
+LOG=$HOME/ffmpegMovie_$_now.log;
+if [ ! -f $LOG ]; then
+    touch $LOG;
+fi
+
+IFS=$(echo -en "\n\b");
+STARTFULLDATE=$(date +"%c");
+echo "Start Encoding for $STARTFULLDATE" >> $LOG ;
+function is_int() { return $(test "$@" -eq "$@" > /dev/null 2>&1); }
+
+for FILE in $(find $SRC -type f -name '*.mkv' -o -name '*.mp4' -size +$MINSIZE)
+do
+    filename=$(basename $FILE);
+    fulldir=$(dirname $FILE);
+    extension=${filename##*.};
+    filename=${filename%.*};
+    filename=${filename%.*};
+    filename="${filename//.x264}";
+    filename="${filename//.X264}";
+    filename="${filename//.h264}";
+    filename="${filename//.H264}";
+    filename="${filename//.DTS-HD.MA.5.1.AVC}";
+    filename="${filename//.DTS-HD.MA.5.1}";
+    filename="${filename//.DTS-ES}";
+    filename="${filename//.DTS-HD.MA.7.1}";
+    filename="${filename//.DTS-HD.MA}";
+    filename="${filename//.DTS}";
+    filename="${filename//.MULTISUBS}";
+    filename="${filename//-HD.MA.5.1}";
+    filename="${filename//-HD}";
+    Title="${filename//./ }";
+
+##echo "filename: $filename  FILE: $FILE";
+
+    unset tempVars;
+    declare -A tempVars;
+
+    START=$(date +%s);
+    tempVars[fileSizebegin]=$(stat --printf="%s" "$FILE");
+    tempVars[fileSize]=$(echo "scale=0; ${tempVars[fileSizebegin]}/1000000" | bc);
+    tempVars[origFileSize]=$(numfmt --to=iec-i --suffix=B --format="%.2f" ${tempVars[fileSizebegin]});
+    ##  Detect what audio codec is being used:
+    ###audio=$(ffprobe "$FILE" 2>&1 | sed -n '/Audio:/s/.*: \([a-zA-Z0-9]*\).*/\1/p' | sed 1q)
+    ##  Detect video codec:
+    ###video=$(ffprobe "$FILE" 2>&1 | sed -n '/Video:/s/.*: \([a-zA-Z0-9]*\).*/\1/p' | sed 1q)
+
+    eval $(ffprobe -v quiet -show_format -of flat=s=_ -show_entries stream=duration,codec_name,codec_type,avg_frame_rate -sexagesimal "$FILE");
+    bitrate=${format_bit_rate};
+    if ! $(is_int "${bitrate}"); then
+        continue 2;
+    else
+        kbitrate=$((bitrate/1000))k;
+    fi
+
+    stream0type=${streams_stream_0_codec_type};
+    stream1type=${streams_stream_1_codec_type};
+
+    if [ "$stream0type" = "video" ]
+    then
+        video=${streams_stream_0_codec_name};
+        audio=${streams_stream_1_codec_name};
+        FPS=$(echo "scale=2; ${streams_stream_0_avg_frame_rate}" | bc);
+        if ! [[ $FPS =~ ^[0-9]+([.][0-9]+)?$ ]] || [ "$video" = "h265" ] || [ "$video" = "hevc" ] || [ "$video" = "mpeg4" ] ; then
+            ##echo "error: $FPS Not a number in file: $FILE";
+            continue 2;
+        fi
+    elif [ "$stream0type" = "audio" ]  && [ "$stream1type" = "video"  ];
+    then
+        video=${streams_stream_1_codec_name};
+        audio=${streams_stream_0_codec_name};
+        FPS=$(echo "scale=2; ${streams_stream_1_avg_frame_rate}" | bc);
+        if ! [[ $FPS =~ ^[0-9]+([.][0-9]+)?$ ]] || [ "$video" = "h265" ] || [ "$video" = "hevc" ] || [ "$video" = "mpeg4" ] ; then
+            ##echo "error: $FPS Not a number in file: $FILE";
+            continue 2;
+        fi
+    else
+        ##echo -e "Could not determine a stream type for file: $FILE" >> $LOG
+        continue 2;
+    fi
+
+    ## Detect video bitrate
+    bitrate1=$bitrate;
+    ## bitrateTMP=$(( ${bitrate1}-600 ));
+    newbitratetmp=$((bitrate1 / 2));
+    newbitratetmpcompare=$((newbitratetmp / 1000));
+    newbitrate=$((newbitratetmpcompare))k;
+
+    ## check min bitrate
+    if [ "$newbitratetmpcompare" -gt "2500" ]; then
+        #echo "$newbitratetmpcompare > 5000";
+        finalbitrate="2500k";
+    elif  [ "$newbitratetmpcompare" -lt "2000" ]; then
+        continue 2;
+    else
+        #echo "$newbitratetmpcompare < 5000";
+        finalbitrate=$newbitrate;
+    fi
+
+    duration=${format_duration};
+    HRS=$(echo $duration | cut -d":" -f1);
+    MIN=$(echo $duration | cut -d":" -f2);
+    SEC=$(echo $duration | cut -d":" -f3);
+    TOT_FR=$(echo "($HRS*3600+$MIN*60+$SEC)*$FPS" | bc | cut -d"." -f1);
+
+    echo -e "Encoding $filename Started at $STARTFULLDATE\nDuration = $duration, Bitrate = $kbitrate" >> $LOG
+    ##echo "filename: $filename origBitrate: $bitrate1 newbitratetmp: $newbitratetmp finalbitrate: $finalbitrate"
+    if [ $audio = "ac3" ] || [ $audio = "aac" ]; then
+        #echo "Audio Is AC3 or AAC just copy it...";
+        ffmpeg -hwaccel nvdec -hide_banner -i "$FILE" -metadata title="$Title" -c:a copy -metadata:s:a:0 language=eng -c:v hevc_nvenc -preset medium -profile:v main -rc vbr_hq -b:v 2500k -y "$fulldir/$filename.x265.mkv" 
+    else
+        #echo "Audio Is Not AC3 or AAC convert  it...";
+        ffmpeg -hwaccel nvdec -hide_banner -i "$FILE" -metadata title="$Title" -c:a ac3 -metadata:s:a:0 language=eng -async 1 -c:v hevc_nvenc -preset medium -profile:v main -rc vbr_hq -b:v 2500k -y "$fulldir/$filename.x265.mkv" 
+    fi
+    ##mv $FILE /mnt/Movies/Unsorted;
+    tempVars[encodedFileSizetmp]=$(stat --printf="%s" "$fulldir/$filename.x265.mkv");
+    tempVars[encodedFileSize]=$(echo "scale=0; ${tempVars[encodedFileSizetmp]}/1000000" | bc);
+    tempVars[encodedEndFileSize]=$(numfmt --to=iec-i --suffix=B --format="%.2f" ${tempVars[encodedFileSizetmp]});
+    tempVars[sizeChange]=$(echo "scale=2; ${tempVars[encodedFileSize]}/${tempVars[fileSize]} * 100" | bc);
+    tempVars[sizeChangeNew]=$(echo "scale=2; 100 - ${tempVars[sizeChange]}" | bc);
+    END=$(date +%s);
+    DIFF=$(( $END - $START ));
+    AV_RATE=$(( TOT_FR / DIFF ));
+    eval $(ffprobe -v quiet -show_format -of flat=s=_ -show_entries stream=duration,codec_name,codec_type -sexagesimal "$fulldir/$filename.x265.mkv");
+    bitratenew=${format_bit_rate};
+    durationnew=${format_duration};
+    HRSN=$(echo $durationnew | cut -d":" -f1);
+    MINN=$(echo $durationnew | cut -d":" -f2);
+    SECN=$(echo $durationnew | cut -d":" -f3);
+    durationlongNew=$(echo "($HRSN*3600+$MINN*60+$SECN)" | bc | cut -d"." -f1);
+    _output=`echo "$durationlongNew >= 480" | bc`
+    if [ $_output == "1" ]; then
+       echo "$(tput setaf 2)$(tput setab 7)Video Durations Match. Moving Original File To Unsorted Directory$(tput sgr 0)"
+       echo "$(tput setaf 2)$(tput setab 7)Video Durations Match. Moving Original File To Unsorted Directory$(tput sgr 0)" >> $LOG
+       mv -f $FILE /MoviesTMP;
+       echo "File Move Complete, If you want to cancel Do ctrl+c now or process will continue in 10 seconds"
+    else
+       echo -e "$(tput setaf 1)$(tput setab 7)durationlong: $durationlong is not equal to durationlongnew: $durationlongNew\nremoving file $fulldir/$filename.x265.mkv$(tput sgr 0)"
+       echo -e "$(tput setaf 1)$(tput setab 7)durationlong: $durationlong is not equal to durationlongnew: $durationlongNew\nremoving file $fulldir/$filename.x265.mkv$(tput sgr 0)" >> $LOG
+       rm -f "$fulldir/$filename.x265.mkv";
+    fi
+    curl -s -d "eventType=Manual&filepath=$fulldir/$filename.x265.mkv" http://10.0.0.14:3467/d700e4b05d6d4989b49eac4207cf4b05 > /dev/null
+    kbitratenew=$((bitratenew/1000))k;
+    
+           #echo "$filename Successfully Encoded. File encoding time: $(($DIFF / 60)) minute(s) and $(($DIFF % 60)) second(s)";
+    echo "$filename Successfully Encoded. File encoding time: $(($DIFF / 60)) minute(s) and $(($DIFF % 60)) second(s)" >> $LOG
+        #echo "Orig: ${tempVars[origFileSize]} New: ${tempVars[encodedEndFileSize]} Changed: ${tempVars[sizeChangeNew]}% Smaller";
+    echo "Orig: ${tempVars[origFileSize]} New: ${tempVars[encodedEndFileSize]} Changed: ${tempVars[sizeChangeNew]}% Smaller New Bitrate: $kbitratenew Average rate of $AV_RATE fps" >> $LOG
+    echo "-----------------------------------------------------------------------------------------" >> $LOG
+    echo "" >> $LOG
+    sleep 10;
+done;
+# echo "Done Encoding All Movies. Shuting Down in 60 seconds. Do ctrl+c to cancel poweroff";
+echo "Done Encoding for $STARTFULLDATE" >> $LOG
+cp $LOG /MoviesTMP/
+rm -f $LOG;
+#sleep 60;
+##sudo poweroff;
