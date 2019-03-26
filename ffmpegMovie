@@ -6,7 +6,7 @@ SRC="/Movies"
 
 MINSIZE=${2:-1G};
 _now=$(date +"%m_%d_%Y")
-LOG=$HOME/ffmpegMovie_$_now.log;
+LOG=/MoviesTMP/ffmpegMovie_$_now.log;
 if [ ! -f $LOG ]; then
     touch $LOG;
 fi
@@ -89,7 +89,8 @@ do
     fi
 
     ## Detect video bitrate
-    bitrate1=$bitrate;
+    ##bitrate1=$bitrate;
+    bitrate1=$(( ${bitrate}-650 ));
     ## bitrateTMP=$(( ${bitrate1}-600 ));
     newbitratetmp=$((bitrate1 / 2));
     newbitratetmpcompare=$((newbitratetmp / 1000));
@@ -163,15 +164,15 @@ do
     durationlongNew=$(echo "($HRSN*3600+$MINN*60+$SECN)" | bc | cut -d"." -f1);
     _output=`echo "$durationlongNew >= 480" | bc`
     if [ $_output == "1" ]; then
-       echo "$(tput setaf 2)$(tput setab 7)Video Durations Match. Moving Original File To Unsorted Directory$(tput sgr 0)"
-       echo "$(tput setaf 2)$(tput setab 7)Video Durations Match. Moving Original File To Unsorted Directory$(tput sgr 0)" >> $LOG
+       ##echo "$(tput setaf 2)$(tput setab 7)Video Durations Match. Moving Original File To Unsorted Directory$(tput sgr 0)"
+       echo "Video Durations Match. Moving Original File To Unsorted Directory" >> $LOG
        mv -f $FILE /MoviesTMP;
        chown 99.100 "$fulldir/$filename.x265.mkv";
        curl -s -d "eventType=Manual&filepath=$fulldir/$filename.x265.mkv" http://10.0.0.25:3468/9c4b81fe234e4d6eb9011cefe514d915 > /dev/null
        echo "File Move Complete, If you want to cancel Do ctrl+c now or process will continue in 10 seconds"
     else
-       echo -e "$(tput setaf 1)$(tput setab 7)durationlong: $durationlong is not equal to durationlongnew: $durationlongNew\nremoving file $fulldir/$filename.x265.mkv$(tput sgr 0)"
-       echo -e "$(tput setaf 1)$(tput setab 7)durationlong: $durationlong is not equal to durationlongnew: $durationlongNew\nremoving file $fulldir/$filename.x265.mkv$(tput sgr 0)" >> $LOG
+       ##echo -e "$(tput setaf 1)$(tput setab 7)durationlong: $durationlong is not equal to durationlongnew: $durationlongNew\nremoving file $fulldir/$filename.x265.mkv$(tput sgr 0)"
+       echo -e "durationlong: $durationlong is not equal to durationlongnew: $durationlongNew\nremoving file $fulldir/$filename.x265.mkv" >> $LOG
        rm -f "$fulldir/$filename.x265.mkv";
     fi
     
@@ -187,7 +188,7 @@ do
 done;
 # echo "Done Encoding All Movies. Shuting Down in 60 seconds. Do ctrl+c to cancel poweroff";
 echo "Done Encoding for $STARTFULLDATE" >> $LOG
-cp $LOG /MoviesTMP/
-rm -f $LOG;
+# cp $LOG /MoviesTMP/
+# rm -f $LOG;
 #sleep 60;
 ##sudo poweroff;
