@@ -4,7 +4,7 @@
 ##SRC=${1:-/mnt/Movies};
 SRC="/Movies"
 
-MINSIZE=${MINVIDSIZE:-1G};
+MINSIZE=${2:-1G};
 _now=$(date +"%m_%d_%Y")
 LOG=/MoviesTMP/ffmpegMovie_$_now.log;
 if [ ! -f $LOG ]; then
@@ -100,7 +100,7 @@ do
     if [ "$newbitratetmpcompare" -gt "5000" ]; then
         #echo "$newbitratetmpcompare > 5000";
         finalbitrate="2500k";
-    elif  [ "$newbitratetmpcompare" -lt "2000" ]; then
+    elif  [ "$newbitratetmpcompare" -lt "$MINBITRATE" ]; then
         continue 2;
     else
         #echo "$newbitratetmpcompare < 5000";
