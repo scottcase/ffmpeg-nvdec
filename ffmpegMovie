@@ -5,6 +5,7 @@
 SRC="/Movies"
 
 MINSIZE=${2:-1G};
+MINBITRATE=${MINBITRATEVAR:-2000};
 _now=$(date +"%m_%d_%Y")
 LOG=/MoviesTMP/ffmpegMovie_$_now.log;
 if [ ! -f $LOG ]; then
