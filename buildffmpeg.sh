@@ -33,3 +33,6 @@ cd ffmpeg
 --enable-version3 
 make -j 10 &> /dev/null
 make install
+
+cp /usr/local/bin/ffmpeg ffmpeg_binary/
+cp /usr/local/bin/ffprobe ffmpeg_binary/
