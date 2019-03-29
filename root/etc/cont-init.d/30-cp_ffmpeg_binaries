@@ -1,0 +1,8 @@
+#!/usr/bin/with-contenv bash
+
+echo ""
+echo "Copy FFMPEG binaries..."
+echo ""
+cp /ffmpeg_binary/* /usr/local/bin/
+chmod +x /usr/local/bin/ffmpeg
+chmod +x /usr/local/bin/ffprobe
