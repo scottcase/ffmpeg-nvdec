@@ -4,7 +4,7 @@
 ##SRC=${1:-/mnt/Movies};
 SRC="/Movies"
 
-MINSIZE=${2:-1G};
+MINSIZE=${MINVIDSIZE:-1G};
 _now=$(date +"%m_%d_%Y")
 LOG=/MoviesTMP/ffmpegMovie_$_now.log;
 if [ ! -f $LOG ]; then
