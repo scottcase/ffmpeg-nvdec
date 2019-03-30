@@ -26,6 +26,9 @@ RUN echo "**** Done updating base ****"
 COPY /ffmpegMovie /ffmpegMovie
 RUN chmod +x /ffmpegMovie
 
+# add local files
+COPY root/ /
+
 ### Install ffmpeg
 #RUN echo "**** Install ffmpeg ****" && /tmp/buildffmpeg.sh
 
