@@ -4,4 +4,4 @@ echo "Starting ffmpegMovie."
 cd /
 
 exec \
-s6-setuidgid abc bash ffmpegMovie
+s6-setuidgid abc ffmpegMovie
