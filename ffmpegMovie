@@ -1,13 +1,6 @@
 #!/bin/bash
 ## PATH="/home/scott/bin:$PATH"
 
-echo ""
-echo "Copy FFMPEG binaries..."
-echo ""
-cp /ffmpeg_binary/* /usr/local/bin/
-chmod +x /usr/local/bin/ffmpeg
-chmod +x /usr/local/bin/ffprobe
-
 ##SRC=${1:-/mnt/Movies};
 SRC="/Movies"
 
