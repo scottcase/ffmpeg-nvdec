@@ -1,4 +1,5 @@
-#!/usr/bin/with-contenv bash
+#!/bin/bash
+## PATH="/home/scott/bin:$PATH"
 
 echo ""
 echo "Copy FFMPEG binaries..."
