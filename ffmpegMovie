@@ -19,7 +19,7 @@ function is_int() { return $(test "$@" -eq "$@" > /dev/null 2>&1); }
 
 # echo "find line: find $SRC -type f -name '*.mkv' -o -name '*.mp4' -size +$MINSIZE"
 
-for FILE in $(find $SRC -type f -name '*.mkv' -o -name '*.mp4' -size +$MINSIZE)
+for FILE in $(find $SRC -type f -size +$MINSIZE)
 do
     filename=$(basename $FILE);
     fulldir=$(dirname $FILE);
