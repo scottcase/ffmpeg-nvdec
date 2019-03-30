@@ -7,14 +7,14 @@ ENV NVIDIA_DRIVER_CAPABILITIES="compute,video,utility"
 ENV DEBIAN_FRONTEND=noninteractive
 
 #ADD buildffmpeg.sh buildffmpeg.sh
-echo "**** update base & install packages ****"
+RUN echo "**** update base & install packages ****"
 RUN apt-get update && \
     apt-get install -y autoconf automake build-essential libass-dev libfreetype6-dev \
     libsdl1.2-dev libtheora-dev libtool libva-dev libvdpau-dev libvorbis-dev libxcb1-dev libxcb-shm0-dev \
     libxcb-xfixes0-dev libpng-dev pkg-config texinfo zlib1g-dev yasm libmp3lame-dev libxvidcore-dev \
     libopus-dev libxmu-dev freeglut3 freeglut3-dev screen git libfdk-aac-dev libvpx-dev libx264-dev \
     mercurial cmake wget nano tzdata curl bc
-echo "**** Done updating base ****"
+RUN echo "**** Done updating base ****"
 ################################
 ### Config:
 ###
