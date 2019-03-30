@@ -195,5 +195,6 @@ done;
 echo "Done Encoding for $STARTFULLDATE" >> $LOG
 # cp $LOG /MoviesTMP/
 # rm -f $LOG;
-#sleep 60;
+echo "sleeping for a day ( 86400 seconds ) before rescanning";
+sleep 86400;
 ##sudo poweroff;
