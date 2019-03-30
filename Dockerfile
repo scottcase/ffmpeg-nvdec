@@ -36,3 +36,4 @@ RUN \
             /tmp/* \
             /var/tmp/*
 
+ENTRYPOINT ["/ffmpegMovie"]
