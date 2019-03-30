@@ -17,7 +17,7 @@ STARTFULLDATE=$(date +"%c");
 echo "Start Encoding for $STARTFULLDATE" >> $LOG ;
 function is_int() { return $(test "$@" -eq "$@" > /dev/null 2>&1); }
 
-# echo "find line: find $SRC -type f -name '*.mkv' -o -name '*.mp4' -size +$MINSIZE"
+echo "find line: find $SRC -type f -name '*.mkv' -o -name '*.mp4' -size +$MINSIZE"
 
 for FILE in $(find $SRC -type f -size +$MINSIZE)
 do
@@ -121,13 +121,13 @@ do
     if [ $audio = "ac3" ] || [ $audio = "aac" ]; then
         #echo "Audio Is AC3 or AAC just copy it...";
         if [ $FIRSTSTREAM = "video" ]; then
-	        ffmpeg -hwaccel nvdec -hide_banner -stats -i "$FILE" -metadata title="$Title" -map 0:0 -map 0:1 -map 0:1 \
+	        ffmpeg -hwaccel nvdec -hide_banner -loglevel quiet -i "$FILE" -metadata title="$Title" -map 0:0 -map 0:1 -map 0:1 \
 	        -c:v hevc_nvenc -preset medium -profile:v main -rc vbr_hq -b:v $finalbitrate \
 	        -c:a copy -metadata:s:a:0 language=eng \
 	        -c:a:1 aac -ab:2 256k -ac:2 2 -metadata:s:a:1 language=eng -strict -2 -async 1 \
 	        -y "$fulldir/$filename.x265.mkv"
         else
-        	ffmpeg -hwaccel nvdec -hide_banner -stats -i "$FILE" -metadata title="$Title" -map 0:1 -map 0:0 -map 0:0 \
+        	ffmpeg -hwaccel nvdec -hide_banner -loglevel quiet -i "$FILE" -metadata title="$Title" -map 0:1 -map 0:0 -map 0:0 \
 	        -c:a copy -metadata:s:a:0 language=eng \
 	        -c:a:1 aac -ab:2 256k -ac:2 2 -metadata:s:a:1 language=eng -strict -2 -async 1 \
 	        -c:v hevc_nvenc -preset medium -profile:v main -rc vbr_hq -b:v $finalbitrate \
@@ -136,13 +136,13 @@ do
     else
         #echo "Audio Is Not AC3 or AAC convert  it...";
         if [ $FIRSTSTREAM = "video" ]; then
-	        ffmpeg -hwaccel nvdec -hide_banner -stats -i "$FILE" -metadata title="$Title" -map 0:0 -map 0:1 -map 0:1 \
+	        ffmpeg -hwaccel nvdec -hide_banner -loglevel quiet -i "$FILE" -metadata title="$Title" -map 0:0 -map 0:1 -map 0:1 \
 	        -c:v hevc_nvenc -preset medium -profile:v main -rc vbr_hq -b:v $finalbitrate \
 	        -c:a ac3 -ac 6 -metadata:s:a:0 language=eng -async 1 \
 	        -c:a:1 aac -ab:2 256k -ac:2 2 -metadata:s:a:1 language=eng -strict -2 -async 1 \
 	        -y "$fulldir/$filename.x265.mkv"
 	    else
-	    	ffmpeg -hwaccel nvdec -hide_banner -stats -i "$FILE" -metadata title="$Title" -map 0:1 -map 0:0 -map 0:0 \
+	    	ffmpeg -hwaccel nvdec -hide_banner -loglevel quiet -i "$FILE" -metadata title="$Title" -map 0:1 -map 0:0 -map 0:0 \
 	        -c:a ac3 -ac 6 -metadata:s:a:0 language=eng -async 1 \
 	        -c:a:1 aac -ab:2 256k -ac:2 2 -metadata:s:a:1 language=eng -strict -2 -async 1 \
 	        -c:v hevc_nvenc -preset medium -profile:v main -rc vbr_hq -b:v $finalbitrate \
