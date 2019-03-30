@@ -17,7 +17,7 @@ STARTFULLDATE=$(date +"%c");
 echo "Start Encoding for $STARTFULLDATE" >> $LOG ;
 function is_int() { return $(test "$@" -eq "$@" > /dev/null 2>&1); }
 
-echo "find line: find $SRC -type f -name '*.mkv' -o -name '*.mp4' -size +$MINSIZE"
+# echo "find line: find $SRC -type f -name '*.mkv' -o -name '*.mp4' -size +$MINSIZE"
 
 for FILE in $(find $SRC -type f -name '*.mkv' -o -name '*.mp4' -size +$MINSIZE)
 do
@@ -116,7 +116,7 @@ do
     SEC=$(echo $duration | cut -d":" -f3);
     TOT_FR=$(echo "($HRS*3600+$MIN*60+$SEC)*$FPS" | bc | cut -d"." -f1);
     ENCODESTARTFULLDATE=$(date +"%c");
-    echo -e "Encoding $filename Started at $ENCODESTARTFULLDATE\nDuration = $duration, Bitrate = $kbitrate" >> $LOG
+    echo -e "Encoding $filename Started at $ENCODESTARTFULLDATE\nDuration = $duration, Bitrate = $kbitrate, Filesize = ${tempVars[origFileSize]}" >> $LOG
     ##echo "filename: $filename origBitrate: $bitrate1 newbitratetmp: $newbitratetmp finalbitrate: $finalbitrate"
     if [ $audio = "ac3" ] || [ $audio = "aac" ]; then
         #echo "Audio Is AC3 or AAC just copy it...";
