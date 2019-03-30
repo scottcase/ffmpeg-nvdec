@@ -20,8 +20,8 @@ RUN echo "**** Done updating base ****"
 ###
 
 # Add pip requirements
-#COPY /buildffmpeg.sh /tmp/buildffmpeg.sh
-#RUN chmod +x /tmp/buildffmpeg.sh
+COPY /buildffmpeg.sh /tmp/buildffmpeg.sh
+RUN chmod +x /tmp/buildffmpeg.sh
 
 COPY /ffmpegMovie /ffmpegMovie
 RUN chmod +x /ffmpegMovie
@@ -30,7 +30,7 @@ RUN chmod +x /ffmpegMovie
 COPY root/ /
 
 ### Install ffmpeg
-#RUN echo "**** Install ffmpeg ****" && /tmp/buildffmpeg.sh
+RUN echo "**** Install ffmpeg ****" && /tmp/buildffmpeg.sh
 
 ### Install pyinotify service.
 RUN \

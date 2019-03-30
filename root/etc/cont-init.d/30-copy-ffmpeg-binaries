@@ -3,6 +3,8 @@
 echo ""
 echo "Copy FFMPEG binaries..."
 echo ""
-cp /ffmpeg_binary/* /usr/local/bin/
-chmod +x /usr/local/bin/ffmpeg
-chmod +x /usr/local/bin/ffprobe
+cp /usr/local/bin/ffmpeg /ffmpeg_binary/
+cp /usr/local/bin/ffprobe /ffmpeg_binary/
+#cp /ffmpeg_binary/* /usr/local/bin/
+#chmod +x /usr/local/bin/ffmpeg
+#chmod +x /usr/local/bin/ffprobe
