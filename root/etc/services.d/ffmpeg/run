@@ -1,0 +1,7 @@
+#!/usr/bin/with-contenv bash
+
+echo "Starting ffmpegMovie."
+cd /
+
+exec \
+s6-setuidgid abc bash ffmpegMovie
