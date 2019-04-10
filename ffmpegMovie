@@ -59,6 +59,7 @@ do
     eval $(ffprobe -v quiet -show_format -of flat=s=_ -show_entries stream=duration,codec_name,codec_type,avg_frame_rate -sexagesimal "$FILE");
     bitrate=${format_bit_rate};
     if ! $(is_int "${bitrate}"); then
+    	echo -e "Filename: $filename Bitrate: !is_int ${bitrate}" >> $LOG
         continue 2;
     else
         kbitrate=$((bitrate/1000))k;
@@ -74,7 +75,7 @@ do
         FPS=$(echo "scale=2; ${streams_stream_0_avg_frame_rate}" | bc);
         FIRSTSTREAM="video"
         if ! [[ $FPS =~ ^[0-9]+([.][0-9]+)?$ ]] || [ "$video" = "h265" ] || [ "$video" = "hevc" ] || [ "$video" = "mpeg4" ] ; then
-            ##echo "error: $FPS Not a number in file: $FILE";
+            echo "error: $FPS Not a number in file: $FILE" >> $LOG
             continue 2;
         fi
     elif [ "$stream0type" = "audio" ]  && [ "$stream1type" = "video"  ];
@@ -84,11 +85,11 @@ do
         FPS=$(echo "scale=2; ${streams_stream_1_avg_frame_rate}" | bc);
         FIRSTSTREAM="audio"
         if ! [[ $FPS =~ ^[0-9]+([.][0-9]+)?$ ]] || [ "$video" = "h265" ] || [ "$video" = "hevc" ] || [ "$video" = "mpeg4" ] ; then
-            ##echo "error: $FPS Not a number in file: $FILE";
+            echo "error: $FPS Not a number in file: $FILE" >> $LOG
             continue 2;
         fi
     else
-        ##echo -e "Could not determine a stream type for file: $FILE" >> $LOG
+        echo -e "Could not determine a stream type for file: $FILE" >> $LOG
         continue 2;
     fi
 
@@ -105,6 +106,7 @@ do
         #echo "$newbitratetmpcompare > 5000";
         finalbitrate="2500k";
     elif  [ "$newbitratetmpcompare" -lt "$MINBITRATE" ]; then
+    	echo -e "Filename: $filename Bitrate: $newbitratetmpcompare < $MINBITRATE" >> $LOG
         continue 2;
     else
         #echo "$newbitratetmpcompare < 5000";
