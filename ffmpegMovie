@@ -6,6 +6,7 @@ SRC="/Movies"
 
 MINSIZE=${MINSIZEVAR:-1G};
 MINBITRATE=${MINBITRATEVAR:-2000};
+IS4K=$IS4KVAR;
 _now=$(date +"%m_%d_%Y")
 LOG=/MoviesTMP/ffmpegMovie_$_now.log;
 if [ ! -f $LOG ]; then
@@ -104,13 +105,18 @@ do
     bitrate1=$(( ${bitrate}-650 ));
     ## bitrateTMP=$(( ${bitrate1}-600 ));
     newbitratetmp=$((bitrate1 / 2));
+    newbitratetmpTMP=$((newbitratetmp / 2));
+    new4kbitrate=$((newbitratetmp + newbitratetmpTMP));
     newbitratetmpcompare=$((newbitratetmp / 1000));
+    newbitrate4kcompare=$((new4kbitrate / 1000));
     newbitrate=$((newbitratetmpcompare))k;
 
     ## check min bitrate
     if [ "$newbitratetmpcompare" -gt "5000" ]; then
         #echo "$newbitratetmpcompare > 5000";
         finalbitrate="2500k";
+    elif [ $IS4K = "YES" ]; then
+        finalbitrate=$((newbitrate4kcompare))k;
     elif  [ "$newbitratetmpcompare" -lt "$MINBITRATE" ]; then
     	echo -e "Filename: $filename Bitrate: $newbitratetmpcompare < $MINBITRATE" >> $LOG
         continue 2;
@@ -118,6 +124,8 @@ do
         #echo "$newbitratetmpcompare < 5000";
         finalbitrate=$newbitrate;
     fi
+    
+    
 
     duration=${format_duration};
     HRS=$(echo $duration | cut -d":" -f1);
