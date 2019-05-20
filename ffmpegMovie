@@ -125,7 +125,6 @@ do
         finalbitrate=$newbitrate;
     fi
     
-    
 
     duration=${format_duration};
     HRS=$(echo $duration | cut -d":" -f1);
