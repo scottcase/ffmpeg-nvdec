@@ -8,7 +8,12 @@ MINSIZE=${MINSIZEVAR:-1G};
 MINBITRATE=${MINBITRATEVAR:-2000};
 IS4K=$IS4KVAR;
 _now=$(date +"%m_%d_%Y")
-LOG=/MoviesTMP/ffmpegMovie_$_now.log;
+if [ $IS4K = "YES" ]; then
+    LOG=/MoviesTMP/ffmpegMovie4k_$_now.log;
+else
+    LOG=/MoviesTMP/ffmpegMovie_$_now.log;
+fi
+
 if [ ! -f $LOG ]; then
     touch $LOG;
 fi
