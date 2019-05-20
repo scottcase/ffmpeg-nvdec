@@ -119,13 +119,14 @@ do
     newbitratetmpcompare=$((newbitratetmp / 1000));
     newbitrate4kcompare=$((new4kbitrate / 1000));
     newbitrate=$((newbitratetmpcompare))k;
+    newbitrate4k=$((newbitrate4kcompare))k;
 
     ## check min bitrate
     if [ "$newbitratetmpcompare" -gt "5000" ]; then
         #echo "$newbitratetmpcompare > 5000";
         finalbitrate="2500k";
     elif [ $IS4K = "YES" ]; then
-        finalbitrate=$newbitrate4kcompare;
+        finalbitrate=$newbitrate4k;
     elif  [ "$newbitratetmpcompare" -lt "$MINBITRATE" ]; then
     	echo -e "Filename: $filename Bitrate: $newbitratetmpcompare < $MINBITRATE" >> $LOG
         continue 2;
