@@ -4,22 +4,19 @@
 ##SRC=${1:-/mnt/Movies};
 IS4K=$IS4KVAR;
 
-if [ $IS4K = "YES" ]; then
-    SRC="/Movies4k"
-else
-    SRC="/Movies"
-fi
-##SRC="/Movies"
-
 MINSIZE=${MINSIZEVAR:-1G};
 MINBITRATE=${MINBITRATEVAR:-2000};
 
 _now=$(date +"%m_%d_%Y")
+
 if [ $IS4K = "YES" ]; then
+    SRC="/Movies4k"
     LOG=/MoviesTMP/ffmpegMovie4k_$_now.log;
 else
+    SRC="/Movies"
     LOG=/MoviesTMP/ffmpegMovie_$_now.log;
 fi
+##SRC="/Movies"
 
 if [ ! -f $LOG ]; then
     touch $LOG;
@@ -128,7 +125,7 @@ do
         #echo "$newbitratetmpcompare > 5000";
         finalbitrate="2500k";
     elif [ $IS4K = "YES" ]; then
-        finalbitrate=$((newbitrate4kcompare))k;
+        finalbitrate=$newbitrate4kcompare;
     elif  [ "$newbitratetmpcompare" -lt "$MINBITRATE" ]; then
     	echo -e "Filename: $filename Bitrate: $newbitratetmpcompare < $MINBITRATE" >> $LOG
         continue 2;
