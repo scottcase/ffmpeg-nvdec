@@ -1,21 +1,13 @@
 #!/bin/bash
 ## PATH="/home/scott/bin:$PATH"
 
-##SRC=${1:-/mnt/Movies};
-IS4K=$IS4KVAR;
-
 MINSIZE=${MINSIZEVAR:-1G};
 MINBITRATE=${MINBITRATEVAR:-2000};
 
 _now=$(date +"%m_%d_%Y")
 
-if [ $IS4K = "YES" ]; then
-    SRC="/Movies4k"
-    LOG=/MoviesTMP/ffmpegMovie4k_$_now.log;
-else
-    SRC="/Movies"
-    LOG=/MoviesTMP/ffmpegMovie_$_now.log;
-fi
+SRC="/Movies"
+LOG=/MoviesTMP/ffmpegMovie_$_now.log;
 ##SRC="/Movies"
 
 if [ ! -f $LOG ]; then
@@ -125,8 +117,6 @@ do
     if [ "$newbitratetmpcompare" -gt "5000" ]; then
         #echo "$newbitratetmpcompare > 5000";
         finalbitrate="2500k";
-    elif [ $IS4K = "YES" ]; then
-        finalbitrate=$newbitrate4k;
     elif  [ "$newbitratetmpcompare" -lt "$MINBITRATE" ]; then
     	echo -e "Filename: $filename Bitrate: $newbitratetmpcompare < $MINBITRATE" >> $LOG
         continue 2;
