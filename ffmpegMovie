@@ -188,6 +188,7 @@ do
        echo "Video Durations Match. Moving Original File To Unsorted Directory" >> $LOG
        mv -f $FILE /MoviesTMP;
        chown 99.100 "$fulldir/$filename.x265.mkv";
+       chmod 666 "$fulldir/$filename.x265.mkv";
        curl -s -d "eventType=Manual&filepath=$fulldir/$filename.x265.mkv" http://10.0.0.25:3468/9c4b81fe234e4d6eb9011cefe514d915 > /dev/null
        echo "File Move Complete, If you want to cancel Do ctrl+c now or process will continue in 10 seconds"
     else
