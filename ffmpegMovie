@@ -135,37 +135,23 @@ do
     echo -e "Encoding $filename Started at $ENCODESTARTFULLDATE\nDuration = $duration, Bitrate = $kbitrate, Filesize = ${tempVars[origFileSize]}" >> $LOG
     echo -e "Attempting To Encoding $filename Started at $ENCODESTARTFULLDATE\nDuration = $duration, Bitrate = $kbitrate, Filesize = ${tempVars[origFileSize]}"
     ##echo "filename: $filename origBitrate: $bitrate1 newbitratetmp: $newbitratetmp finalbitrate: $finalbitrate"
-    if [ $audio = "ac3" ] || [ $audio = "aac" ]; then
-        #echo "Audio Is AC3 or AAC just copy it...";
-        if [ $FIRSTSTREAM = "video" ]; then
-	        ffmpeg -hwaccel nvdec -hide_banner -loglevel quiet -i "$FILE" -metadata title="$Title" -map 0:0 -map 0:1 -map 0:1 \
-	        -c:v hevc_nvenc -preset medium -profile:v main -rc vbr_hq -b:v $finalbitrate \
-	        -c:a copy -metadata:s:a:0 language=eng \
-	        -c:a:1 aac -ab:2 256k -ac:2 2 -metadata:s:a:1 language=eng -strict -2 -async 1 \
-	        -y "$fulldir/$filename.x265.mkv"
-        else
-        	ffmpeg -hwaccel nvdec -hide_banner -loglevel quiet -i "$FILE" -metadata title="$Title" -map 0:1 -map 0:0 -map 0:0 \
-	        -c:a copy -metadata:s:a:0 language=eng \
-	        -c:a:1 aac -ab:2 256k -ac:2 2 -metadata:s:a:1 language=eng -strict -2 -async 1 \
-	        -c:v hevc_nvenc -preset medium -profile:v main -rc vbr_hq -b:v $finalbitrate \
-	        -y "$fulldir/$filename.x265.mkv"
-	    fi
+    ##just copy audio 
+    if [ $FIRSTSTREAM = "video" ]; then
+        ffmpeg -hwaccel nvdec -hide_banner -loglevel quiet -i "$FILE" -metadata title="$Title" -map 0:0 -map 0:1 -map 0:1 \
+        -c:v hevc_nvenc -preset medium -profile:v main -rc vbr_hq -b:v $finalbitrate \
+        -c:a copy -metadata:s:a:0 language=eng \
+        -c:a:1 aac -ab:2 256k -ac:2 2 -metadata:s:a:1 language=eng -strict -2 -async 1 \
+        -y "$fulldir/$filename.x265.mkv"
     else
-        #echo "Audio Is Not AC3 or AAC convert  it...";
-        if [ $FIRSTSTREAM = "video" ]; then
-	        ffmpeg -hwaccel nvdec -hide_banner -loglevel quiet -i "$FILE" -metadata title="$Title" -map 0:0 -map 0:1 -map 0:1 \
-	        -c:v hevc_nvenc -preset medium -profile:v main -rc vbr_hq -b:v $finalbitrate \
-	        -c:a ac3 -ac 6 -metadata:s:a:0 language=eng -async 1 \
-	        -c:a:1 aac -ab:2 256k -ac:2 2 -metadata:s:a:1 language=eng -strict -2 -async 1 \
-	        -y "$fulldir/$filename.x265.mkv"
-	    else
-	    	ffmpeg -hwaccel nvdec -hide_banner -loglevel quiet -i "$FILE" -metadata title="$Title" -map 0:1 -map 0:0 -map 0:0 \
-	        -c:a ac3 -ac 6 -metadata:s:a:0 language=eng -async 1 \
-	        -c:a:1 aac -ab:2 256k -ac:2 2 -metadata:s:a:1 language=eng -strict -2 -async 1 \
-	        -c:v hevc_nvenc -preset medium -profile:v main -rc vbr_hq -b:v $finalbitrate \
-	        -y "$fulldir/$filename.x265.mkv"
-	    fi
-    fi
+       	ffmpeg -hwaccel nvdec -hide_banner -loglevel quiet -i "$FILE" -metadata title="$Title" -map 0:1 -map 0:0 -map 0:0 \
+        -c:a copy -metadata:s:a:0 language=eng \
+        -c:a:1 aac -ab:2 256k -ac:2 2 -metadata:s:a:1 language=eng -strict -2 -async 1 \
+        -c:v hevc_nvenc -preset medium -profile:v main -rc vbr_hq -b:v $finalbitrate \
+        -y "$fulldir/$filename.x265.mkv"
+	fi
+	: <<'END_COMMENT'
+    OLD Stuff Was Here
+    END_COMMENT;
     ##mv $FILE /mnt/Movies/Unsorted;
     tempVars[encodedFileSizetmp]=$(stat --printf="%s" "$fulldir/$filename.x265.mkv");
     tempVars[encodedFileSize]=$(echo "scale=0; ${tempVars[encodedFileSizetmp]}/1000000" | bc);
