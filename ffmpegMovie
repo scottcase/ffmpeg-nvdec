@@ -183,10 +183,11 @@ do
     
     kbitratenew=$((bitratenew/1000))k;
     
-           #echo "$filename Successfully Encoded. File encoding time: $(($DIFF / 60)) minute(s) and $(($DIFF % 60)) second(s)";
+    echo "$filename Successfully Encoded. File encoding time: $(($DIFF / 60)) minute(s) and $(($DIFF % 60)) second(s)";
     echo "$filename Successfully Encoded. File encoding time: $(($DIFF / 60)) minute(s) and $(($DIFF % 60)) second(s)" >> $LOG
         #echo "Orig: ${tempVars[origFileSize]} New: ${tempVars[encodedEndFileSize]} Changed: ${tempVars[sizeChangeNew]}% Smaller";
     echo "Orig: ${tempVars[origFileSize]} New: ${tempVars[encodedEndFileSize]} Changed: ${tempVars[sizeChangeNew]}% Smaller New Bitrate: $kbitratenew Average rate of $AV_RATE fps" >> $LOG
+    echo "Orig: ${tempVars[origFileSize]} New: ${tempVars[encodedEndFileSize]} Changed: ${tempVars[sizeChangeNew]}% Smaller New Bitrate: $kbitratenew Average rate of $AV_RATE fps";
     echo "-----------------------------------------------------------------------------------------" >> $LOG
     echo "" >> $LOG
     sleep 10;
