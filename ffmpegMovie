@@ -149,9 +149,7 @@ do
         -c:v hevc_nvenc -preset medium -profile:v main -rc vbr_hq -b:v $finalbitrate \
         -y "$fulldir/$filename.x265.mkv"
 	fi
-	: <<'END_COMMENT'
-    OLD Stuff Was Here
-    END_COMMENT;
+	
     ##mv $FILE /mnt/Movies/Unsorted;
     tempVars[encodedFileSizetmp]=$(stat --printf="%s" "$fulldir/$filename.x265.mkv");
     tempVars[encodedFileSize]=$(echo "scale=0; ${tempVars[encodedFileSizetmp]}/1000000" | bc);
@@ -201,4 +199,4 @@ ENDFULLDATE=$(date +"%c");
 echo "Finished Encoding for $STARTFULLDATE @ $ENDFULLDATE";
 echo "sleeping for a day ( 86400 seconds ) before rescanning";
 sleep 86400;
-##sudo poweroff;
+# sudo poweroff;
